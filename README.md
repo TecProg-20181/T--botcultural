@@ -1,5 +1,12 @@
 # Taskbot
 
+## Instruções para fazer antes de começar a programar 
+- Crie uma env com python 2.7.10 (o projeto da professora está todo em Python 2)
+- Rode o requirements.txt com o pip
+- Devel é a nossa branch principal para desenvolvimento e ela está protegida
+- A Master só será usada para entrega do projeto final
+- E xó.
+
 ## Começando a mexer no seu bot
 - Seguir o tutorial de criação de bots [BotFather](https://core.telegram.org/bots#6-botfather)
 - Adicionar o TOKEN no local indicado no código
@@ -12,4 +19,3 @@
 ## Refatorando
 - As oportunidades de refatoração que a equipe encontrar, deve ser cadastrada
 em forma de issue no repositório do time
-
