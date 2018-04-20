@@ -19,3 +19,5 @@
 ## Refatorando
 - As oportunidades de refatoração que a equipe encontrar, deve ser cadastrada
 em forma de issue no repositório do time
+
+
