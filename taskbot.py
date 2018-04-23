@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import json
 import requests
@@ -10,7 +11,7 @@ import sqlalchemy
 import db
 from db import Task
 
-TOKEN = ""
+TOKEN = "466360727:AAFTguLw1SLZT6J2r55KAI-EwWL_aDNbs3I"
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 HELP = """

@@ -1,7 +1,7 @@
 # Taskbot
 
 ## Instruções do que fazer antes de começar a programar 
-- Crie uma env com python 2.7.10 (o projeto da professora está todo em Python 2)
+- Crie uma env com python 3.6.4 (o projeto da professora está todo em Python 3)
 - Rode o requirements.txt com o pip
 - Devel é a nossa branch principal para desenvolvimento e ela está protegida
 - A Master só será usada para entrega do projeto final
