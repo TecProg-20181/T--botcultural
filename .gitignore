@@ -113,5 +113,5 @@ Session.vim
 tags
 
 *.vscode
-
+*.tecprog
 config.py
