@@ -11,8 +11,9 @@ import sqlalchemy
 import db
 from db import Task
 
-TOKEN = "466360727:AAFTguLw1SLZT6J2r55KAI-EwWL_aDNbs3I"
-URL = "https://api.telegram.org/bot{}/".format(TOKEN)
+import config
+
+URL = "https://api.telegram.org/bot{}/".format(config.TOKEN)
 
 HELP = """
  /new NOME
