@@ -26,6 +26,7 @@ HELP = """
  /dependson ID ID...
  /duplicate ID
  /priority ID PRIORITY{low, medium, high}
+ /showpriority
  /help
 """
 
@@ -237,7 +238,7 @@ def handle_updates(updates):
                 elif task.status == 'DONE':
                     icon = '\U00002611'
 
-                a += '[[{}]] {} {}\n'.format(task.id, icon, task.name)
+                a += '[[{}]] {} {} - {}\n'.format(task.id, icon, task.name, task.priority)
                 a += deps_text(task, chat)
 
             send_message(a, chat)
@@ -333,6 +334,34 @@ def handle_updates(updates):
                         task.priority = text.lower()
                         send_message("*Task {}* priority has priority *{}*".format(task_id, text.lower()), chat)
                 db.session.commit()
+        
+        elif command == '/showpriority':
+            priority_list = ''
+            high_list = ''
+            medium_list = ''
+            low_list = ''
+            undefined_priority = '\U0001F914 Tasks whithout priority\n'
+
+            priority_list += '\n\n\U0001F4CB * Task List order by priority *\n'
+            query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.priority)
+            for task in query.all():
+                icon = '\U0001F195'
+                if task.status == 'DOING':
+                    icon = '\U000023FA'
+                elif task.status == 'DONE':
+                    icon = '\U00002611'
+
+                if task.priority == 'high':
+                    high_list += '\U0001F4D5 * {} *- {} {}\n'.format(task.priority, task.name, icon)
+                elif task.priority == 'medium':
+                    medium_list += '\U0001F4D9 * {} *- {} {}\n'.format(task.priority, task.name, icon)
+                elif task.priority == 'low':
+                    low_list += '\U0001F4D7 * {} *- {} {}\n'.format(task.priority, task.name, icon)
+                else:
+                    undefined_priority += '\U00002753 {} {}\n'.format(task.name, icon)
+
+            priority_list += high_list + medium_list + low_list + '\n' + undefined_priority
+            send_message(priority_list, chat)
 
         elif command == '/start':
             send_message("Welcome! Here is a list of things you can do.", chat)
