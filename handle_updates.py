@@ -84,6 +84,18 @@ def deps_text(task, chat, preceed=''):
 
     return text
 
+def is_not_circular_dependence(task_id, depid, chat):
+    query = db.session.query(Task).filter_by(id=task_id, chat=chat)
+    try:
+        task = query.one()
+        if not task.parents:
+            return True
+        elif str(task.parents) == str(depid):
+            return False
+        else:
+            return is_not_circular_dependence(task.parents, depid, chat)
+    except sqlalchemy.orm.exc.NoResultFound:
+        send_message("_404_ Task {} not found x.x".format(depid), chat)
 
 class HandleUpdates:
 
@@ -295,20 +307,16 @@ class HandleUpdates:
                                 query = db.session.query(Task).filter_by(id=depid, chat=chat)
                                 try:
                                     taskdep = query.one()
-                                    parlist = taskdep.dependencies.split(',')
-                                    if str(task.id) not in parlist:
-                                        taskdep.parents += str(task.id) + ','
-                                        deplist = task.dependencies.split(',')
-                                        if str(depid) not in deplist:
-                                            task.dependencies += str(depid) + ','
+                                    if is_not_circular_dependence(task.id, depid, chat):
+                                        taskdep.parents = task.id
+                                        task.dependencies += str(depid) + ','
+                                        db.session.commit()
                                         send_message("Task {} dependencies up to date".format(task_id), chat)
                                     else:
                                         send_message("Dependencies can't be circular", chat)
                                 except sqlalchemy.orm.exc.NoResultFound:
                                     send_message("_404_ Task {} not found x.x".format(depid), chat)
                                     continue
-
-                    db.session.commit()
             elif command == '/priority':
                 text = ''
                 if msg != '':
