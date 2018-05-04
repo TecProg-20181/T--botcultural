@@ -14,6 +14,9 @@ from db import Task
 from handle_tasks import *
 
 def main():
+    """
+    Function that init the bot
+    """
     tasks = HandleTasks()
     last_update_id = None
 

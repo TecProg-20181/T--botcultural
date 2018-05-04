@@ -29,16 +29,25 @@ class BotCultural():
                 "/help\n"
             )
     def get_url(self, url):
+        """"
+        Return the especific url
+        """"
         response = requests.get(url)
         content = response.content.decode("utf8")
         return content
 
     def get_json_from_url(self, url):
+        """"
+        Return json from especific url
+        """"
         content = self.get_url(url)
         js = json.loads(content)
         return js
 
     def get_updates(self, offset=None):
+        """"
+        Return updates from bot with timeout of 100ms
+        """"
         url = self.URL + "getUpdates?timeout=100"
         if offset:
             url += "&offset={}".format(offset)
@@ -46,6 +55,9 @@ class BotCultural():
         return js
 
     def send_message(self, text, chat_id, reply_markup=None):
+        """"
+        Return messages that shows to user
+        """"
         text = urllib.parse.quote_plus(text)
         url = self.URL + "sendMessage?text={}&chat_id={}&parse_mode=Markdown".format(text, chat_id)
         if reply_markup:
@@ -53,6 +65,9 @@ class BotCultural():
         self.get_url(url)
 
     def get_last_update_id(self, updates):
+        """"
+        Get the last id of update
+        """"
         update_ids = []
         for update in updates["result"]:
             update_ids.append(int(update["update_id"]))
@@ -60,6 +75,9 @@ class BotCultural():
         return max(update_ids)
 
     def deps_text(self, task, chat, preceed=''):
+        """"
+        Return texts to taks with deppendecies
+        """"
         text = ''
 
         for i in range(len(task.dependencies.split(',')[:-1])):
@@ -89,9 +107,11 @@ class HandleTasks(BotCultural):
 
     def __init__(self):
         BotCultural.__init__(self)
-    
 
     def handle_updates(self, updates):
+        """
+        Loop with all the functios of the bot can do
+        """
         for update in updates["result"]:
             if 'message' in update:
                 message = update['message']
