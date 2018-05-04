@@ -11,83 +11,111 @@ from db import Task
 import config
 
 
-URL = "https://api.telegram.org/bot{}/".format(config.TOKEN)
+class CulturalBot():
+    def __init__(self):
+        self.URL = "https://api.telegram.org/bot{}/".format(config.TOKEN)
+        self.HELP = (
+                "/new NOME\n"
+                "/todo ID\n"
+                "/doing ID\n"
+                "/done ID\n"
+                "/delete ID\n"
+                "/rename ID NOME\n"
+                "/dependson ID ID...\n"
+                "/duplicate ID\n"
+                "/priority ID PRIORITY{low, medium, high}\n"
+                "/duedate ID DATE{dd/mm/aaaa}\n"
+                "/list\n"
+                "/help\n"
+            )
+    def get_url(self, url):
+        response = requests.get(url)
+        content = response.content.decode("utf8")
+        return content
 
-HELP = """
- /new NOME
- /todo ID
- /doing ID
- /done ID
- /delete ID
- /list
- /rename ID NOME
- /dependson ID ID...
- /duplicate ID
- /priority ID PRIORITY{low, medium, high}
- /showpriority
- /help
-"""
+    def get_json_from_url(self, url):
+        content = self.get_url(url)
+        js = json.loads(content)
+        return js
 
-def get_url(url):
-    response = requests.get(url)
-    content = response.content.decode("utf8")
-    return content
+    def get_updates(self, offset=None):
+        url = self.URL + "getUpdates?timeout=100"
+        if offset:
+            url += "&offset={}".format(offset)
+        js = self.get_json_from_url(url)
+        return js
 
-def get_json_from_url(url):
-    content = get_url(url)
-    js = json.loads(content)
-    return js
+    def send_message(self, text, chat_id, reply_markup=None):
+        text = urllib.parse.quote_plus(text)
+        url = self.URL + "sendMessage?text={}&chat_id={}&parse_mode=Markdown".format(text, chat_id)
+        if reply_markup:
+            url += "&reply_markup={}".format(reply_markup)
+        self.get_url(url)
 
-def get_updates(offset=None):
-    url = URL + "getUpdates?timeout=100"
-    if offset:
-        url += "&offset={}".format(offset)
-    js = get_json_from_url(url)
-    return js
+    def get_last_update_id(self, updates):
+        update_ids = []
+        for update in updates["result"]:
+            update_ids.append(int(update["update_id"]))
 
-def send_message(text, chat_id, reply_markup=None):
-    text = urllib.parse.quote_plus(text)
-    url = URL + "sendMessage?text={}&chat_id={}&parse_mode=Markdown".format(text, chat_id)
-    if reply_markup:
-        url += "&reply_markup={}".format(reply_markup)
-    get_url(url)
+        return max(update_ids)
 
-def get_last_update_id(updates):
-    update_ids = []
-    for update in updates["result"]:
-        update_ids.append(int(update["update_id"]))
+# def deps_text(task, chat, preceed=''):
+#     text = ''
 
-    return max(update_ids)
+#     for i in range(len(task.dependencies.split(',')[:-1])):
+#         line = preceed
+#         query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
+#         dep = query.one()
 
-def deps_text(task, chat, preceed=''):
-    text = ''
+#         icon = '\U0001F195'
+#         if dep.status == 'DOING':
+#             icon = '\U000023FA'
+#         elif dep.status == 'DONE':
+#             icon = '\U00002611'
 
-    for i in range(len(task.dependencies.split(',')[:-1])):
-        line = preceed
-        query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
-        dep = query.one()
+#         if i + 1 == len(task.dependencies.split(',')[:-1]):
+#             line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
+#             line += deps_text(dep, chat, preceed + '    ')
+#         else:
+#             line += '├── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
+#             line += deps_text(dep, chat, preceed + '│   ')
 
-        icon = '\U0001F195'
-        if dep.status == 'DOING':
-            icon = '\U000023FA'
-        elif dep.status == 'DONE':
-            icon = '\U00002611'
+#         text += line
 
-        if i + 1 == len(task.dependencies.split(',')[:-1]):
-            line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
-            line += deps_text(dep, chat, preceed + '    ')
-        else:
-            line += '├── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
-            line += deps_text(dep, chat, preceed + '│   ')
-
-        text += line
-
-    return text
+#     return text
 
 
-class HandleUpdates:
+class HandleTasks(CulturalBot):
 
-    def handle_updates(updates):
+    def __init__(self):
+        CulturalBot.__init__(self)
+    
+    def deps_text(self, task, chat, preceed=''):
+        text = ''
+
+        for i in range(len(task.dependencies.split(',')[:-1])):
+            line = preceed
+            query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
+            dep = query.one()
+
+            icon = '\U0001F195'
+            if dep.status == 'DOING':
+                icon = '\U000023FA'
+            elif dep.status == 'DONE':
+                icon = '\U00002611'
+
+            if i + 1 == len(task.dependencies.split(',')[:-1]):
+                line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
+                line += self.deps_text(dep, chat, preceed + '    ')
+            else:
+                line += '├── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
+                line += self.deps_text(dep, chat, preceed + '│   ')
+
+            text += line
+
+        return text
+
+    def handle_updates(self, updates):
         for update in updates["result"]:
             if 'message' in update:
                 message = update['message']
@@ -364,10 +392,10 @@ class HandleUpdates:
                 send_message(priority_list, chat)
 
             elif command == '/start':
-                send_message("Welcome! Here is a list of things you can do.", chat)
-                send_message(HELP, chat)
+                self.send_message("Welcome! Here is a list of things you can do.", chat)
+                self.send_message(self.HELP, chat)
             elif command == '/help':
-                send_message("Here is a list of things you can do.", chat)
-                send_message(HELP, chat)
+                self.send_message("Here is a list of things you can do.", chat)
+                self.send_message(self.HELP, chat)
             else:
-                send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
+                self.send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
