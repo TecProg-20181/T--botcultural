@@ -11,20 +11,22 @@ import sqlalchemy
 import db
 from db import Task
 
-import config
-from handle_updates import *
+from handle_tasks import *
 
 def main():
-    hu = HandleUpdates
+    """
+    Function that init the bot
+    """
+    tasks = HandleTasks()
     last_update_id = None
 
     while True:
         print("Updates")
-        updates = get_updates(last_update_id)
+        updates = tasks.get_updates(last_update_id)
 
         if len(updates["result"]) > 0:
-            last_update_id = get_last_update_id(updates) + 1
-            hu.handle_updates(updates)
+            last_update_id = tasks.get_last_update_id(updates) + 1
+            tasks.handle_updates(updates)
 
         time.sleep(0.5)
 
