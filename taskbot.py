@@ -11,7 +11,7 @@ import sqlalchemy
 import db
 from db import Task
 
-from handle_updates import *
+from handle_tasks import *
 
 def main():
     tasks = HandleTasks()
