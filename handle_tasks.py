@@ -59,31 +59,6 @@ class CulturalBot():
 
         return max(update_ids)
 
-# def deps_text(task, chat, preceed=''):
-#     text = ''
-
-#     for i in range(len(task.dependencies.split(',')[:-1])):
-#         line = preceed
-#         query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
-#         dep = query.one()
-
-#         icon = '\U0001F195'
-#         if dep.status == 'DOING':
-#             icon = '\U000023FA'
-#         elif dep.status == 'DONE':
-#             icon = '\U00002611'
-
-#         if i + 1 == len(task.dependencies.split(',')[:-1]):
-#             line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
-#             line += deps_text(dep, chat, preceed + '    ')
-#         else:
-#             line += '├── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
-#             line += deps_text(dep, chat, preceed + '│   ')
-
-#         text += line
-
-#     return text
-
 
 class HandleTasks(CulturalBot):
 
