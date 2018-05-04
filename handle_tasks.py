@@ -319,17 +319,20 @@ class HandleTasks(BotCultural):
                                 query = db.session.query(Task).filter_by(id=depid, chat=chat)
                                 try:
                                     taskdep = query.one()
-                                    taskdep.parents += str(task.id) + ','
+                                    parlist = taskdep.dependencies.split(',')
+                                    if str(task.id) not in parlist:
+                                        taskdep.parents += str(task.id) + ','
+                                        deplist = task.dependencies.split(',')
+                                        if str(depid) not in deplist:
+                                            task.dependencies += str(depid) + ','
+                                        self.send_message("Task {} dependencies up to date".format(task_id), chat)
+                                    else:
+                                        self.send_message("Dependencies can't be circular", chat)
                                 except sqlalchemy.orm.exc.NoResultFound:
                                     self.send_message("_404_ Task {} not found x.x".format(depid), chat)
                                     continue
 
-                                deplist = task.dependencies.split(',')
-                                if str(depid) not in deplist:
-                                    task.dependencies += str(depid) + ','
-
                     db.session.commit()
-                    self.send_message("Task {} dependencies up to date".format(task_id), chat)
             elif command == '/priority':
                 text = ''
                 if msg != '':
