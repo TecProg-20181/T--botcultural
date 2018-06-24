@@ -9,6 +9,7 @@ import db
 from db import Task
 
 import config
+import icons
 from auxiliar_functions import BotCultural
 
 
@@ -162,14 +163,14 @@ class HandleTasks(BotCultural):
             elif command == '/list':
                 a = ''
 
-                a += '\U0001F4CB Task List\n'
+                a += icons.LIST_ICON + ' Task List\n'
                 query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.id)
                 for task in query.all():
-                    icon = '\U0001F195'
+                    icon = icons.NEW_ICON
                     if task.status == 'DOING':
-                        icon = '\U000023FA'
+                        icon = icons.DOING_ICON
                     elif task.status == 'DONE':
-                        icon = '\U00002611'
+                        icon = icons.DONE_ICON
 
                     a += '[[{}]] {} {} - {}\n'.format(task.id, icon, task.name, task.priority)
                     a += self.deps_text(task, chat)
@@ -177,17 +178,17 @@ class HandleTasks(BotCultural):
                 self.send_message(a, chat)
                 a = ''
 
-                a += '\U0001F4DD _Status_\n'
+                a += icons.STATUS_ICON + ' _Status_\n'
                 query = db.session.query(Task).filter_by(status='TODO', chat=chat).order_by(Task.id)
-                a += '\n\U0001F195 *TODO*\n'
+                a += icons.NEW_ICON + '\n *TODO*\n'
                 for task in query.all():
                     a += '[[{}]] {}\n'.format(task.id, task.name)
                 query = db.session.query(Task).filter_by(status='DOING', chat=chat).order_by(Task.id)
-                a += '\n\U000023FA *DOING*\n'
+                a += icons.DOING_ICON + '\n *DOING*\n'
                 for task in query.all():
                     a += '[[{}]] {}\n'.format(task.id, task.name)
                 query = db.session.query(Task).filter_by(status='DONE', chat=chat).order_by(Task.id)
-                a += '\n\U00002611 *DONE*\n'
+                a += icons.DONE_ICON + '\n *DONE*\n'
                 for task in query.all():
                     a += '[[{}]] {}\n'.format(task.id, task.name)
 
@@ -276,25 +277,25 @@ class HandleTasks(BotCultural):
                 high_list = ''
                 medium_list = ''
                 low_list = ''
-                undefined_priority = '\U0001F914 Tasks whithout priority\n'
+                undefined_priority = icons.WITHOUT_PRIORITY_ICON + ' Tasks whithout priority\n'
 
-                priority_list += '\n\n\U0001F4CB * Task List order by priority *\n'
+                priority_list += icons.LIST_ICON + '\n\n * Task List order by priority *\n'
                 query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.priority)
                 for task in query.all():
-                    icon = '\U0001F195'
+                    icon = icons.NEW_ICON
                     if task.status == 'DOING':
-                        icon = '\U000023FA'
+                        icon = icons.DOING_ICON
                     elif task.status == 'DONE':
-                        icon = '\U00002611'
+                        icon = icons.DONE_ICON
 
                     if task.priority == 'high':
-                        high_list += '\U0001F4D5 * {} *- {} {}\n'.format(task.priority, task.name, icon)
+                        high_list += icons.HIGH_ICON + ' * {} *- {} {}\n'.format(task.priority, task.name, icon)
                     elif task.priority == 'medium':
-                        medium_list += '\U0001F4D9 * {} *- {} {}\n'.format(task.priority, task.name, icon)
+                        medium_list += icons.MEDIUM_ICON + ' * {} *- {} {}\n'.format(task.priority, task.name, icon)
                     elif task.priority == 'low':
-                        low_list += '\U0001F4D7 * {} *- {} {}\n'.format(task.priority, task.name, icon)
+                        low_list += icons.LOW_ICON + ' * {} *- {} {}\n'.format(task.priority, task.name, icon)
                     else:
-                        undefined_priority += '\U00002753 {} {}\n'.format(task.name, icon)
+                        undefined_priority += icons.QUESTION_ICON + '{} {}\n'.format(task.name, icon)
 
                 priority_list += high_list + medium_list + low_list + '\n' + undefined_priority
                 self.send_message(priority_list, chat)
