@@ -16,9 +16,9 @@ class BotCultural():
         self.URL = "https://api.telegram.org/bot{}/".format(config.TOKEN)
         self.HELP = (
                 "/new NOME\n"
-                "/todo ID\n"
-                "/doing ID\n"
-                "/done ID\n"
+                "/todo ID ID...\n"
+                "/doing ID ID ...\n"
+                "/done ID ID ...\n"
                 "/delete ID\n"
                 "/rename ID NOME\n"
                 "/dependson ID ID...\n"
