@@ -198,15 +198,15 @@ class HandleTasks(BotCultural):
                 query = db.session.query(Task).filter_by(status='TODO', chat=chat).order_by(Task.id)
                 a += icons.NEW_ICON + '\n *TODO*\n'
                 for task in query.all():
-                    a += '[[{}]] {}\n'.format(task.id, task.name)
+                    a += '[[{}]] {} - {}\n'.format(task.id, task.name, task.duedate)
                 query = db.session.query(Task).filter_by(status='DOING', chat=chat).order_by(Task.id)
                 a += icons.DOING_ICON + '\n *DOING*\n'
                 for task in query.all():
-                    a += '[[{}]] {}\n'.format(task.id, task.name)
+                    a += '[[{}]] {} - {}\n'.format(task.id, task.name, task.duedate)
                 query = db.session.query(Task).filter_by(status='DONE', chat=chat).order_by(Task.id)
                 a += icons.DONE_ICON + '\n *DONE*\n'
                 for task in query.all():
-                    a += '[[{}]] {}\n'.format(task.id, task.name)
+                    a += '[[{}]] {} - {}\n'.format(task.id, task.name, task.duedate)
 
                 self.send_message(a, chat)
             elif command == '/dependson':
