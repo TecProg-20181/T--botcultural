@@ -316,8 +316,9 @@ class HandleTasks(BotCultural):
                 priority_list += high_list + medium_list + low_list + '\n' + undefined_priority
                 self.send_message(priority_list, chat)
 
-            elif command == '/date':
+            elif command == '/duedate':
                 text = ''
+                duedate = ''
                 if msg != '':
                     if len(msg.split(' ', 1)) > 1:
                         text = msg.split(' ', 1)[1]
@@ -335,11 +336,23 @@ class HandleTasks(BotCultural):
                         return
 
                     if text == '':
-                        task.duedate = date(2018, 6, 20)
+                        task.duedate = None
                         self.send_message("_Cleared_ all dates from task {}".format(task_id), chat)
                     else:
-                        task.duedate = date(2018, 6, 20)
-                        self.send_message("*Task {}* date is *{}*".format(task_id, text.lower()), chat)
+                        duedate = ''
+                        today = ''
+                        result = 0
+                        # corrigindo erro de pegar a data sem /
+                        duedate = text.split('/')
+                        duedate = date(int(duedate[2]), int(duedate[1]), int(duedate[0]))
+                        today = date.today()
+                        # Verificar se a data é maior ou igual que a do dia
+                        result = (duedate - today).days
+                        if result < 0:
+                            self.send_message("The date *must be* greater than or equal today's".format(task_id), chat)
+                        else:
+                            task.duedate = duedate
+                            self.send_message("*Task {}* date is *{}*".format(task_id, text.lower()), chat)
                     db.session.commit()
 
             elif command == '/start':
