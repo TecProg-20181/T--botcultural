@@ -6,10 +6,11 @@ from sqlalchemy.types import *
 from sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine('sqlite:///db.sqlite3', echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+SESSION = sessionmaker(bind=engine)
+SESSION = SESSION()
 
 Base = declarative_base()
+
 
 class Task(Base):
     __tablename__ = 'tasks'
@@ -21,12 +22,13 @@ class Task(Base):
     dependencies = Column(String)
     parents = Column(String)
     priority = Column(String)
-    duedate = Column(Date)
+    duedate = Column(String)
 
     def __repr__(self):
         return "<Task(id={}, chat={}, name='{}', status='{}')>".format(
             self.id, self.chat, self.name, self.status
         )
+
 
 Base.metadata.create_all(engine)
 

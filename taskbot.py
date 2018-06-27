@@ -1,32 +1,27 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-import json
-import requests
+import os
 import time
-import urllib
+from urlhandler import UrlHandler
+from chatbot import ChatBot
+from botmanager import BotManager
+import config 
 
-import sqlalchemy
+TOKEN = config.TOKEN
 
-import db
-from db import Task
-
-from handle_tasks import *
 
 def main():
-    """
-    Function that init the bot
-    """
-    tasks = HandleTasks()
+    """get updates continuosly and manage instructions"""
     last_update_id = None
+    chat_bot = ChatBot.chat_bot_start()
+    url_handler = UrlHandler()
+    bot_manager = BotManager()
 
     while True:
         print("Updates")
-        updates = tasks.get_updates(last_update_id)
+        updates = url_handler.get_updates(last_update_id)
 
-        if len(updates["result"]) > 0:
-            last_update_id = tasks.get_last_update_id(updates) + 1
-            tasks.handle_updates(updates)
+        if updates["result"]:
+            last_update_id = url_handler.get_last_update_id(updates) + 1
+            bot_manager.handle_updates(updates, chat_bot)
 
         time.sleep(0.5)
 

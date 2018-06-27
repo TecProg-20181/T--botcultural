@@ -10,6 +10,7 @@ from db import Task
 
 import config
 import icons
+from handle_issues import HandleIssues
 from auxiliar_functions import BotCultural
 
 
@@ -17,6 +18,7 @@ class HandleTasks(BotCultural):
 
     def __init__(self):
         BotCultural.__init__(self)
+        self.handle_issues = HandleIssues
 
     def handle_updates(self, updates):
         """
@@ -45,6 +47,9 @@ class HandleTasks(BotCultural):
                 db.session.add(task)
                 db.session.commit()
                 self.send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
+
+            elif command == '/newIssue' or command == '/ni':
+                self.handle_issues.new_issue(msg, chat=chat, name=msg)
 
             elif command == '/rename':
                 text = ''
