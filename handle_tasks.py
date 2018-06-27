@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+from datetime import date
 import urllib
 
 import sqlalchemy
@@ -314,6 +315,32 @@ class HandleTasks(BotCultural):
 
                 priority_list += high_list + medium_list + low_list + '\n' + undefined_priority
                 self.send_message(priority_list, chat)
+
+            elif command == '/date':
+                text = ''
+                if msg != '':
+                    if len(msg.split(' ', 1)) > 1:
+                        text = msg.split(' ', 1)[1]
+                    msg = msg.split(' ', 1)[0]
+
+                if not msg.isdigit():
+                    self.send_message("You must inform the task id", chat)
+                else:
+                    task_id = int(msg)
+                    query = db.session.query(Task).filter_by(id=task_id, chat=chat)
+                    try:
+                        task = query.one()
+                    except sqlalchemy.orm.exc.NoResultFound:
+                        self.send_message("_404_ Task {} not found x.x".format(task_id), chat)
+                        return
+
+                    if text == '':
+                        task.duedate = date(2018, 6, 20)
+                        self.send_message("_Cleared_ all dates from task {}".format(task_id), chat)
+                    else:
+                        task.duedate = date(2018, 6, 20)
+                        self.send_message("*Task {}* date is *{}*".format(task_id, text.lower()), chat)
+                    db.session.commit()
 
             elif command == '/start':
                 self.send_message("Welcome! Here is a list of things you can do.", chat)
