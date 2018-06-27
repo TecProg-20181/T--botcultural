@@ -4,6 +4,7 @@
 import json
 import requests
 import time
+from datetime import date
 import urllib
 
 import sqlalchemy
