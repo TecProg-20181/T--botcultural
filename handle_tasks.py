@@ -341,18 +341,15 @@ class HandleTasks(BotCultural):
                     else:
                         duedate = ''
                         today = ''
-                        result = 0
+
                         # corrigindo erro de pegar a data sem /
                         duedate = text.split('/')
                         duedate = date(int(duedate[2]), int(duedate[1]), int(duedate[0]))
                         today = date.today()
                         # Verificar se a data é maior ou igual que a do dia
-                        result = (duedate - today).days
-                        if result < 0:
-                            self.send_message("The date *must be* greater than or equal today's".format(task_id), chat)
-                        else:
-                            task.duedate = duedate
-                            self.send_message("*Task {}* date is *{}*".format(task_id, text.lower()), chat)
+
+                        task.duedate = duedate
+                        self.send_message("*Task {}* date is *{}*".format(task_id, text.lower()), chat)
                     db.session.commit()
 
             elif command == '/start':
