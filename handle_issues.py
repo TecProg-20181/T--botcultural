@@ -1,11 +1,11 @@
 import requests
 import constants
-from urlhandler import UrlHandler
+from handle_urls import HandleUrls
 
 
-class IssueManager:
+class HandleIssues:
     def __init__(self):
-        self.url_handler = UrlHandler()
+        self.handle_urls = HandleUrls()
 
     def split_message(self, msg):
         """split a message"""
@@ -31,14 +31,14 @@ class IssueManager:
 
         print(response.text)
 
-        return self.url_handler.send_message("New Issue created {}".format(name), chat)
+        return self.handle_urls.send_message("New Issue created {}".format(name), chat)
 
     def rename_issue(self, msg, chat):
         """rename a task by id"""
         msg, text = self.split_message(msg)
 
         if text == '':
-            self.url_handler.send_message("""
+            self.handle_urls.send_message("""
                           You want to modify the issue {},
                           but you didn't provide any new text
                          """.format(msg), chat)
@@ -58,17 +58,17 @@ class IssueManager:
         try:
             result_json['state']
         except:
-            return self.url_handler.send_message("Issue does not exist", chat)
+            return self.handle_urls.send_message("Issue does not exist", chat)
 
         requests.request("POST", constants.URL_GITHUB+'/'+msg, data=payload, headers=headers)
-        return self.url_handler.send_message("Issue renamed {}".format(text), chat)
+        return self.handle_urls.send_message("Issue renamed {}".format(text), chat)
 
     def list_issues(self, chat):
         """lists all the issues active in the T--botcultural"""
-        issues = self.url_handler.get_json_from_url(constants.URL_GITHUB)
+        issues = self.handle_urls.get_json_from_url(constants.URL_GITHUB)
         msg = ''
         msg += '\U0001F4CB Issues List\n\n'
         for aux in issues:
             msg += "[[{}]] - {}\n\n".format(str(aux['number']), aux['title'])
 
-        self.url_handler.send_message(msg, chat)
+        self.handle_urls.send_message(msg, chat)

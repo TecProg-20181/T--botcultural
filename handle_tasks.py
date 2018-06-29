@@ -12,12 +12,17 @@ from db import Task
 import config
 import icons
 from auxiliar_functions import BotCultural
+from handle_issues import HandleIssues
+from handle_urls import HandleUrls
+
 
 
 class HandleTasks(BotCultural):
 
     def __init__(self):
         BotCultural.__init__(self)
+        self.handle_issues = HandleIssues()
+        self.handle_urls = HandleUrls()
 
     def handle_updates(self, updates):
         """
@@ -50,6 +55,9 @@ class HandleTasks(BotCultural):
                     db.session.add(task)
                     db.session.commit()
                     self.send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
+            
+            elif command == '/newIssue' or command == '/ni':
+                self.handle_issues.new_issue(msg, chat)
 
             elif command == '/rename':
                 text = ''

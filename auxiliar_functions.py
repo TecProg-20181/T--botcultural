@@ -20,6 +20,7 @@ class BotCultural():
                 "/doing ID ID ...\n"
                 "/done ID ID ...\n"
                 "/delete ID\n"
+                "/newIssue NOME\n"
                 "/rename ID NOME\n"
                 "/dependson ID ID...\n"
                 "/duplicate ID\n"
