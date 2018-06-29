@@ -1,6 +1,7 @@
 import requests
 import constants
 from handle_urls import HandleUrls
+import config
 
 
 class HandleIssues:
@@ -22,11 +23,11 @@ class HandleIssues:
         print(payload)
         headers = {
             'Content-Type': "application/json",
-            'Authorization': "token 91a68df35a9b2ddf80b57a6d28374a496bd0ba86",
+            'Authorization': "token ".format(config.TOKEN_GITHUB),
             'Cache-Control': "no-cache",
             'Postman-Token': "91a68df35a9b2ddf80b57a6d28374a496bd0ba86"
         }
-
+    
         response = requests.request("POST", constants.URL_GITHUB, data=payload, headers=headers)
 
         print(response.text)
