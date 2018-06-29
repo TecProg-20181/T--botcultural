@@ -58,6 +58,12 @@ class HandleTasks(BotCultural):
             
             elif command == '/newIssue' or command == '/ni':
                 self.handle_issues.new_issue(msg, chat)
+            
+            elif command == '/renameIssue' or command == '/ri':
+                self.handle_issues.rename_issue(msg, chat)
+
+            elif command == '/listIssues' or command == '/li':
+                self.handle_issues.list_issues(chat)
 
             elif command == '/rename':
                 text = ''
